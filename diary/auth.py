@@ -1,24 +1,14 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, login_required
-from diary import db
-from diary.models import User
-from diary.forms import LoginForm, RegistrationForm
+from flask import render_template, redirect, url_for, flash
+from flask_login import login_user, login_required, logout_user
+from .models import db, User
+from .forms import LoginForm, RegistrationForm
+from werkzeug.security import check_password_hash
+from flask import Blueprint
 
-auth_bp = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__)
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            flash('Вы успешно вошли!', 'success')
-            return redirect(url_for('diary.index'))
-        flash('Неверный email или пароль', 'danger')
-    return render_template('login.html', form=form)
-
-@auth_bp.route('/register', methods=['GET', 'POST'])
+# Страница регистрации
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -26,13 +16,25 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Регистрация успешна! Теперь войдите в систему.', 'success')
+        flash('You have successfully registered!', 'success')
         return redirect(url_for('auth.login'))
     return render_template('register.html', form=form)
 
-@auth_bp.route('/logout')
+# Страница входа
+@auth.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            return redirect(url_for('index'))
+        flash('Invalid username or password', 'danger')
+    return render_template('login.html', form=form)
+
+# Выход из системы
+@auth.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('Вы вышли из системы', 'info')
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('index'))
