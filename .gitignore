@@ -1,0 +1,28 @@
+# Игнорируем виртуальное окружение
+venv/
+.env
+*.pyc
+__pycache__/
+
+# Конфиденциальные данные и логи
+instance/
+*.db
+*.sqlite3
+*.log
+config.py
+.env
+
+# Кэш и временные файлы
+*.swp
+*.swo
+*.bak
+
+# Файлы IDE и редакторов
+.vscode/
+.idea/
+*.iml
+
+# Фронтенд (если используешь Node.js для сборки)
+node_modules/
+dist/
+build/

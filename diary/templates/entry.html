@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Запись{% endblock %}
+
+{% block content %}
+    <h1>Запись</h1>
+    <p>{{ entry.text }}</p>
+    <a href="/edit/{{ entry.id }}" class="btn btn-warning">Редактировать</a>
+    <a href="/delete/{{ entry.id }}" class="btn btn-danger">Удалить</a>
+{% endblock %}
